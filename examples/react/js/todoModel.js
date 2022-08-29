@@ -17,6 +17,7 @@ var app = app || {};
 		this.key = key;
 		this.todos = Utils.store(key);
 		this.onChanges = [];
+		this.selectedTodos = Utils.store("SELECTED")
 	};
 
 	app.TodoModel.prototype.subscribe = function (onChange) {
@@ -27,12 +28,16 @@ var app = app || {};
 		Utils.store(this.key, this.todos);
 		this.onChanges.forEach(function (cb) { cb(); });
 	};
+	app.TodoModel.prototype.selected = function () {
+		Utils.store("SELECTED", this.selectedTodos);
+	};
 
 	app.TodoModel.prototype.addTodo = function (title) {
 		this.todos = this.todos.concat({
 			id: Utils.uuid(),
 			title: title,
-			completed: false
+			completed: false,
+			addTime: new Date(),
 		});
 
 		this.inform();
@@ -51,13 +56,25 @@ var app = app || {};
 	};
 
 	app.TodoModel.prototype.toggle = function (todoToToggle) {
+		
 		this.todos = this.todos.map(function (todo) {
 			return todo !== todoToToggle ?
 				todo :
-				Utils.extend({}, todo, {completed: !todo.completed});
+				Utils.extend({}, todo, {completed: !todo.completed},{endTime:new Date()});
 		});
-
+		let existingTodo = this.selectedTodos.find(to => todoToToggle.id === to.id);
+		if(existingTodo){
+			
+			let index = this.selectedTodos.indexOf(existingTodo);
+			this.selectedTodos.splice(index,1);
+		}else{
+			this.selectedTodos.push(todoToToggle);
+		}
+		
+		{console.log("todo to toggle",todoToToggle,this.selectedTodos)}
 		this.inform();
+		this.selected();
+		location.reload();	
 	};
 
 	app.TodoModel.prototype.destroy = function (todo) {

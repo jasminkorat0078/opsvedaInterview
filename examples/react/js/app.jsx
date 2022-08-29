@@ -88,6 +88,7 @@ var app = app || {};
 			var footer;
 			var main;
 			var todos = this.props.model.todos;
+			var selectedTodos = this.props.model.selectedTodos;
 
 			var shownTodos = todos.filter(function (todo) {
 				switch (this.state.nowShowing) {
@@ -111,6 +112,7 @@ var app = app || {};
 						editing={this.state.editing === todo.id}
 						onSave={this.save.bind(this, todo)}
 						onCancel={this.cancel}
+						selectedTodos={selectedTodos}
 					/>
 				);
 			}, this);

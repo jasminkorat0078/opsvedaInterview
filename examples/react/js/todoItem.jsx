@@ -76,21 +76,56 @@ var app = app || {};
 		},
 
 		render: function () {
+			var isTodo,l,l1,l2;
+			if(this.props.todo && this.props.selectedTodos.length>0){
+				isTodo = true
+				l=true;
+			}else{
+				isTodo = false;
+				l=false
+			}
+			if(this.props.selectedTodos.length>1){
+				l1=true
+			}else{
+				l1=false
+			}
+			if(this.props.selectedTodos.length>2){
+				l2=true
+			}else{
+				l2=false
+			}
+			
+			const isYellow =isTodo && l? this.props.selectedTodos[this.props.selectedTodos.length-1].id === this.props.todo.id:false;
+			const isPurple =isTodo && l1? this.props.selectedTodos[this.props.selectedTodos.length-2].id === this.props.todo.id:false;
+			const isGreen =isTodo && l2? this.props.selectedTodos[this.props.selectedTodos.length-3].id === this.props.todo.id:false;
+			console.log("component redered");
 			return (
 				<li className={classNames({
 					completed: this.props.todo.completed,
-					editing: this.props.editing
+					editing: this.props.editing,
 				})}>
 					<div className="view">
+						<div className="view-content">
 						<input
 							className="toggle"
 							type="checkbox"
 							checked={this.props.todo.completed}
 							onChange={this.props.onToggle}
 						/>
-						<label onDoubleClick={this.handleEdit}>
+						<label onDoubleClick={this.handleEdit} className={
+							classNames({
+								isYellow:isYellow,
+								isGreen:isGreen,
+								isPurple:isPurple
+							})
+						}>
 							{this.props.todo.title}
 						</label>
+							
+						</div>
+						
+						<div className="view-content">{new Date(this.props.todo.addTime).getHours()} - {new Date(this.props.todo.addTime).getMinutes()} {new Date(this.props.todo.addTime).getSeconds()}</div>
+						{this.props.todo.completed && <div className="view-content">{new Date(this.props.todo.endTime).getHours()} - {new Date(this.props.todo.endTime).getMinutes()} {new Date(this.props.todo.endTime).getSeconds()}</div>}
 						<button className="destroy" onClick={this.props.onDestroy} />
 					</div>
 					<input
